@@ -1,0 +1,50 @@
+(game "Isola"
+	(players 2)
+	(equipment
+		{
+			(board (rectangle 6 8 ))
+			(piece "King" Each (move Step Adjacent (to if:(is Empty (to)))(then (moveAgain))))
+			(piece "Marker" Each)
+		}
+	)
+	(rules
+		(start
+			{
+				(place "King1" {"A4"})
+				(place "King2" {"H3"})
+			}
+		)
+		(play
+			(if (is Even (count Moves))
+				(forEach Piece)
+				(move Add (piece (id "Marker" Mover)) (to (sites Empty)))
+			)
+		)
+		(end
+			(if
+				(no Moves Next)
+				(result Mover Win)
+			)
+		)
+	)
+)
+
+//------------------------------------------------------------------------------
+
+(metadata
+	(info
+		{
+			(description "Isola was created by Bernd Kienitz and published by Ravensburger in 1972. It is a 2-player game in which each player tries to isolate the other player's pawn.")
+			(rules "Each player's turn has two steps. First they move their piece to an adjacent and empty cell, then they remove an empty cell from the play. When a player has no legal move to do, the opponent wins. The white king starts.")
+			(classification "board/space/blocking")
+			(author "Bernd Kienitz")
+			(credit "Ernesto Mendoza Gomez and Léonie Le Cheviller")
+		}
+	)
+	(graphics
+		{
+			(board Style Chess)
+			(piece Scale "Marker" 0.75)
+		}
+	)
+)

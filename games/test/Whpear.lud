@@ -1,0 +1,68 @@
+(define "Columns" 9)
+
+//------------------------------------------------------------------------------
+
+(game "Whpear" 
+    (players 2) 
+    (equipment { 
+        (mancalaBoard 2 "Columns" store:None
+            (track "Track" "0,E,N,W" loop:True)
+        )
+        (regions P1 (sites Bottom))   // P1 home
+        (regions P2 (sites Top))      // P2 home
+        (piece "Seed" Shared)
+        (hand Each)
+    }) 
+    (rules 
+        
+        (start (set Count 2 to:(sites Track)))
+        
+        (play 
+            (move Select 
+                (from 
+                    (if ("SameTurn") 
+                        "LastHoleSowed" 
+                        (sites Mover) 
+                    ) 
+                    if:(> (count at:(from)) 0)
+                )
+                (then 
+                    (sow
+                        apply:(if (> (count at:(to)) 1)
+                            (moveAgain)
+                            (if (is In (to) (sites Mover))
+                                (fromTo 
+                                    (from ("OppositePitTwoRows" (to))) 
+                                    (to (handSite Mover)) 
+                                    count:(count at:("OppositePitTwoRows" (to)))
+                                ) 
+                            )
+                        )
+                    )
+                )
+            )	
+        )
+        
+        (end {
+            (if (< 9 (count Pieces in:(sites Hand P1))) (result P1 Win))
+            (if (< 9 (count Pieces in:(sites Hand P2))) (result P2 Win))
+        })
+    )
+)
+
+//------------------------------------------------------------------------------
+
+(metadata 
+    (info
+        {
+	(rules "2x9 board. Two counters in each hole. Sowing occurs from one of the holes in the player's row. If the final counter lands in an occupied hole, these counters are picked up and sowing continues. If the final counter lands in an empty hole in the player's own row, any counters in the opposite row hole are captured. A player wins when they have collected 10 or more pieces.")
+        }
+    )
+    
+    (graphics {
+        (board Style Mancala)
+    })
+    (ai
+        "Alitev_ai"
+    )
+)

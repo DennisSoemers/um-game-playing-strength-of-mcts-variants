@@ -1,0 +1,38 @@
+(game "Alquero" 
+    (players 2) 
+    (equipment { 
+        ("AlquerqueBoard" 8 6)
+        (piece "Counter" Each)
+    }) 
+    
+    (rules 
+        (start { 
+            (place "Counter1" (union {(expand (sites Bottom)) (sites {"C3" "D3" "E3" "F3" "E4" "F4"}) }))
+            (place "Counter2" (union {(sites {"A6" "B6" "C6" "D6" "A5" "B5"}) (expand (sites Top)) }))
+        })
+        
+        (play 
+            (forEach Piece "Counter" 
+                (or 
+                    ("HopCapture") 
+                    ("StepToEmpty")
+                )
+            )
+        )
+        
+        (end ("NoMoves" Loss)) 
+    )
+)
+
+//------------------------------------------------------------------------------
+
+(metadata 
+    
+    (info
+        {
+        (rules "The board consists of 6x8 intersecting lines with diagonals. Pieces are placed on the intersections and can move along the lines. Each player has 18 pieces. Pieces can move to one adjacent point. Captures can be made by hopping over an opponent's piece. A player loses if all their pieces are captured or if they are unable to make any moves.")
+        }
+    )
+    
+)
+

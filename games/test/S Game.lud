@@ -1,0 +1,72 @@
+(define "CanNotMoveASPiece" 
+    (and 
+        (not (is Mover (next))) 
+        (no Moves Next)
+    )
+)
+
+(define "SWalk"
+	 { {L F R F F L F} {R F L F F R F} }
+)
+
+//------------------------------------------------------------------------------
+
+(game "S Game" 
+    (players 2) 
+    (equipment { 
+        (board (square 6)) 
+        (piece "Dot" Neutral) 
+        (tile "S" Each "SWalk") 
+    }) 
+    (rules 
+        (start { 
+            (place "Dot0" {"A5" "B6" "E1" "F2" "A2" "B1" "E6" "F5"})
+            (place "S1" coord:"B3" state:4)
+            (place "S2" coord:"C2" state:4)
+        })
+        (play
+            (if ("SameTurn")
+                (or
+                    (move Pass)
+                    (move 
+                        (from (sites Occupied by:Neutral)) 
+                        (to (sites Empty))
+                    )
+                )
+                (move
+                    (from (sites Occupied by:Mover)) 
+                    (to (union (sites Empty) (sites Occupied by:Mover))) 
+                    (then (moveAgain))
+                )
+            )
+        )
+        
+        (end 
+            (if 
+                "CanNotMoveASPiece" 
+                (result Mover Win) 
+            ) 
+        ) 
+    ) 
+)
+
+//------------------------------------------------------------------------------
+
+(metadata 
+    
+    (info
+        {
+        (description "S game is a variant of the L game.")
+        (rules "Played on a board of 6x6 squares. Each player controls a 2x3x2 S-shaped piece, and there are eight 1x1 pieces which either player can manipulate. On a turn, a player moves the S piece to a new available position, and then has the option to move one of the 1x1 pieces. When a player cannot move their S piece, they lose.")
+        (version "1.3.12")
+        (classification "board/space/blocking")
+        (credit "Eric Piette")
+        }
+    )
+    
+    (graphics {
+        (player Colour P1 (colour Blue))
+        (player Colour P2 (colour Red))
+    })
+    
+)

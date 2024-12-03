@@ -1,0 +1,58 @@
+(game "Toxad"
+    (players 2) 
+    (equipment { 
+        ("AlquerqueBoardWithBottomAndTopTriangles")
+	(piece "Puma" P1
+            (or 
+                (move Slide)	
+                ("HopCapture")
+            )
+        )
+	(piece "Ox" P1
+            (or {
+                ("StepToEmpty")	
+                ("HopCapture")
+            }
+	    (then 
+            	("ReplayInMovingOn" (sites Mover "Promotion"))
+            )
+	)
+        )
+        (piece "Toad" P2 ("StepToEmpty"))
+	(regions "Promotion" P1 (sites Bottom))
+    }) 
+    
+    (rules 
+        (start {
+            (place "Ox1" coord:"C9")
+            (place "Toad2" (expand (sites Bottom) steps:3))
+        })
+        (play 
+		(or
+		(if "SameTurn" 
+			(move Promote (last To) (piece {"Puma"}) Mover)
+		)
+		(forEach Piece)
+		)
+        )
+        (end {
+            (if (no Moves P1) (result P1 Loss))
+            (if (<= (count Pieces P2) 3) (result P1 Win))
+        })
+    )
+)
+
+//------------------------------------------------------------------------------
+
+(metadata 
+    
+    (info
+        {
+        (rules "5x5 intersecting lines with diagonals in each quadrant. A triangle, the apex intersecting with the apex on both of the sides. A line is drawn from the apex to the midpoint of the base of the triangle. A line bisects this line, connecting the midpoints of the sides of the triangle,  One player plays as one ox, which begins on the center of the base of the large triangle's base. The other player plays as twelve toads. The ox moves first. Pieces move to an empty adjacent space along the lines of the board. The ox may hop over an adjacent toad to an empty space immediately on the opposite side of it, capturing the toad. Toads cannot capture. If the ox reaches the bottom of the board it turns into a puma that can also slide. The toads win by blocking the ox so it cannot move; the ox wins when only three toads remain. ")
+        }
+    )
+    
+    (graphics {
+        (show Edges Diagonal Hidden)
+    })
+)

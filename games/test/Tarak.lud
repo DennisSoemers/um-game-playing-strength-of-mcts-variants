@@ -1,0 +1,155 @@
+(define "Columns" 7)
+
+(define "PiecesOwnedBy" (count Cell at:(handSite #1)))
+
+//------------------------------------------------------------------------------
+
+(game "Tarak" 
+    (players 2) 
+    
+    (equipment { 
+        (mancalaBoard 4 "Columns" store:None
+            { 
+            (track "TrackCCW1" "0,E,N1,W" loop:True P1)
+            (track "TrackCCW2" "14,E,N1,W" loop:True P2)
+            (track "TrackCW1" "6,W,N1,E" loop:True P1)
+            (track "TrackCW2" "21,E,S1,W" loop:True P2)
+            }
+        )
+        (regions "Home" P1 (sites Track "TrackCCW1")) // P1 Home
+        (regions "Home" P2 (sites Track "TrackCCW2")) // P2 home
+        (regions "Outer" P1 (sites Bottom))   // P1 outer Home
+        (regions "Outer" P2 (sites Top))    // P2 outer Home
+        (piece "Seed" Shared)
+        (hand Each)
+    }) 
+    (rules 
+        
+        (start (set Count 2 to:(union (sites P1 "Home") (sites P2 "Home"))))
+        
+        (play
+            (or
+                (if (!= (value Player Mover) 2)
+                    (move Select
+                        (from 
+                            (if 
+                                ("SameTurn") 
+                                (sites {(var "Replay")})
+                                (sites Mover "Home") 
+                            ) 
+                            if:(> (count at:(from)) 0)
+                        )
+                        (then
+                            (and
+                                (sow
+                                    "TrackCCW"
+                                    owner:(mover)
+                                    apply:(if (< 1 (count at:(to)))
+                                        (if (is In (to) (sites Mover "Outer"))
+                                            (and
+                                                (moveAgain)
+                                                (set Var "Replay" (to))
+                                            )
+                                            (if (< 1 (count at:("OppositePit" (to))))
+                                                (and {
+                                                    (fromTo
+                                                        (from ("OppositePit" (to)))
+                                                        (to (handSite Mover))
+                                                        count:(count at:("OppositePit" (to)))
+                                                    )
+                                                    (moveAgain)
+                                                    (set Var "Replay" (to))
+                                                })
+                                                (if (< 1 (count at:("OppositeOuterPit" (to))))
+                                                    (and {
+                                                        (fromTo
+                                                            (from ("OppositeOuterPit" (to)))
+                                                            (to (handSite Mover))
+                                                            count:(count at:("OppositeOuterPit" (to)))
+                                                        )
+                                                        (moveAgain)
+                                                        (set Var "Replay" (to))
+                                                    })
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                                (if (!= (value Player Mover) 1)
+                                    (set Value Mover 1)
+                                )
+                            )
+                        )
+                    )
+                )
+                
+                (if (!= (value Player Mover) 1)
+                    (move Select
+                        (from 
+                            (if 
+                                ("SameTurn") 
+                                (sites {(var "Replay")})
+                                (sites Mover "Home") 
+                            ) 
+                            if:(> (count at:(from)) 0)
+                        )
+                        (then
+                            (and
+                                (sow
+                                    "TrackCW"
+                                    owner:(mover)
+                                    apply:(if (< 1 (count at:(to)))
+                                        (if (is In (to) (sites Mover "Outer"))
+                                            (and
+                                                (moveAgain)
+                                                (set Var "Replay" (to))
+                                            )
+                                            (if (< 1 (count at:("OppositePit" (to))))
+                                                (and {
+                                                    (fromTo
+                                                        (from ("OppositePit" (to)))
+                                                        (to (handSite Mover))
+                                                        count:(count at:("OppositePit" (to)))
+                                                    )
+                                                    (moveAgain)
+                                                    (set Var "Replay" (to))
+                                                })
+                                                (if (< 1 (count at:("OppositeOuterPit" (to))))
+                                                    (and {
+                                                        (fromTo
+                                                            (from ("OppositeOuterPit" (to)))
+                                                            (to (handSite Mover))
+                                                            count:(count at:("OppositeOuterPit" (to)))
+                                                        )
+                                                        (moveAgain)
+                                                        (set Var "Replay" (to))
+                                                    })
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                                (if (!= (value Player Mover) 2)
+                                    (set Value Mover 2)
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
+        
+        (end ("MancalaByScoreWhen" (<= (count Pieces in:(sites Board)) 20)))
+    )
+)
+
+(metadata
+    (info {
+        (rules "The game is played on a board with 4 rows of 7 holes each, with two counters in each hole at the start of the game. Players take turns sowing counters from any hole on their side of the board, in either direction, but the direction chosen on the first turn must be maintained throughout the game. If the final counter lands in an empty hole, the turn ends. If the final counter lands in the outer row in an occupied hole, the player picks up those counters and continues sowing. If the final counter lands in an occupied hole in the inner row, and the opponent's inner row hole opposite contains more than one counter, those counters are captured and the sowing continues from the hole from which the capture was made. If the opponent has no counters in any of their inner row holes, the counters in their outer row holes can be captured in the same manner. The game ends when there are less than 20 counters left on the board. The winner is the player who captured the most counters.")
+        (version "1.3.12")
+        (credit "Achille Morenville")
+    })
+    (graphics {
+        (board Style Mancala)
+    })
+)

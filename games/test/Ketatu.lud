@@ -1,0 +1,23 @@
+(game "Ketatu"
+    (players 2)
+    (equipment {
+        (board (square 11) use:Vertex) 
+        (piece "Marker" Each)
+    })
+    (rules 
+        (play (move Add (to (sites Empty))))
+        (end {
+            (if (is Line 5 All Mover exact:True) (result Mover Win))
+            (if (is Line 6 All Mover) (result Mover Loss))
+            (if (is Line 4 All Mover) (result Mover Loss))
+        })
+    )
+)
+
+(metadata
+    (info {
+        (rules "The game is played on a 11x11 board. Players take turns placing stones in an attempt to make 5 in a row. But if a line of 4 or a line of more than 5 is made, the player loses.")
+        (version "1.3.12")
+        (credit "Achille Morenville")
+    })
+)

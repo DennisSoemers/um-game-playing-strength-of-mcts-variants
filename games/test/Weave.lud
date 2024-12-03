@@ -1,0 +1,42 @@
+(game "Weave"
+    (players 2)
+    (equipment {
+        (board (square 10))
+        (piece "Marker" Each)
+        (regions P1 {(sites Right) (sites Left)})
+        (regions P2 {(sites Top) (sites Bottom)})
+        
+    })
+    (rules
+        (play
+            (move Add (piece (id "Marker" Mover)) (to (sites Empty)))
+        )
+        (end {
+            (if (is Connected Orthogonal Mover) (result Mover Win))
+            (if (is Connected Diagonal Mover) (result Mover Win))
+        })
+    )
+)
+
+//------------------------------------------------------------------------------
+
+(metadata
+    (info
+        {
+        (description "Weave is a 2-player game created by Walter Joris and published in his book '100 Strategic Games for Pen and Paper'.")
+        (rules "The goal of this game is to connect both sides of the board with exclusively orthogonal or diagonal connections.
+            Each turn, a player drops one of his pieces on an empty cell of the board.
+        The white player has to connect the left and right edges of the board, while the black player has to connect the top and bottom ones.")
+        (classification "board/space/connections")
+        (author "Walter Joris")
+        (credit "Ernesto Mendoza Gomez and Léonie Le Cheviller")
+        }
+    )    
+    
+    (graphics
+        {
+        (board Colour Phase0 (colour 223 178 110))
+        (board Style ConnectiveGoal)
+        }
+    )
+)
